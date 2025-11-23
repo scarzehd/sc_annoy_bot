@@ -1,7 +1,7 @@
 FROM python:3.10
 WORKDIR /usr/local/app
 
-ENV DISCORD_BOT_TOKEN
+ENV DISCORD_BOT_TOKEN ""
 
 COPY . .
 
