@@ -7,6 +7,7 @@ text_triggers = {
     "didntnotice": "WHAT ARE YOU WAITING FOR?",
     "didn'tevennotice": "WHAT ARE YOU WAITING FOR?",
     "didntevennotice": "WHAT ARE YOU WAITING FOR?",
+    "oblivion": "WHAT ARE YOU WAITING FOR?",
     "pieces": "Put. It. Together."
 }
 
@@ -31,7 +32,7 @@ async def on_message(message):
     global lessthan
     print(f"Message from {message.author}: {message.content}")
     processed_message = process_string(message.content)
-    if "lessthan" in processed_message or "focus" in processed_message:
+    if "lessthan" in processed_message or "focus" in processed_message or "oblivion" in processed_message:
         if lessthan == None:
             lessthan = await message.guild.fetch_emoji(1287978418314547241)
         await message.add_reaction(lessthan)
