@@ -6,7 +6,8 @@ text_triggers = {
     "didn'tnotice": "WHAT ARE YOU WAITING FOR?",
     "didntnotice": "WHAT ARE YOU WAITING FOR?",
     "didn'tevennotice": "WHAT ARE YOU WAITING FOR?",
-    "didntevennotice": "WHAT ARE YOU WAITING FOR?"
+    "didntevennotice": "WHAT ARE YOU WAITING FOR?",
+    "pieces": "Put. It. Together."
 }
 
 lessthan = None
