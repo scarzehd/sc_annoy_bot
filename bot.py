@@ -2,6 +2,7 @@ import discord
 import dotenv
 import os
 import asyncio
+import random
 
 # text_triggers = {
 #     "lessthan": "WHAT ARE YOU WAITING FOR?",
@@ -27,6 +28,17 @@ class TextTrigger(MessageTrigger):
         for trigger in self.triggers:
             if trigger in processed_string:
                 asyncio.create_task(message.reply(self.response))
+                return
+
+class RandomTrigger(MessageTrigger):
+    def __init__(self, chance:float, trigger:MessageTrigger):
+        self.chance = chance
+        self.trigger = trigger
+    
+    def handle_message(self, message):
+        if random.random() > self.chance:
+            return
+        self.trigger.handle_message(message)
 
 class EmojiTrigger(MessageTrigger):
     def __init__(self, triggers:list[str], emoji_names:list[str]):
@@ -43,14 +55,16 @@ class EmojiTrigger(MessageTrigger):
                         return
 
 triggers:list[MessageTrigger] = [
-    TextTrigger([
-        "lessthan",
-        "focus",
-        "hypnosis",
-        "didntnotice",
-        "didntevennotice",
-        "oblivion"
-    ], "WHAT ARE YOU WAITING FOR?"),
+    RandomTrigger(0.5,
+        TextTrigger([
+            "lessthan",
+            "focus",
+            "hypnosis",
+            "didntnotice",
+            "didntevennotice",
+            "oblivion"
+        ], "WHAT ARE YOU WAITING FOR?")
+    ),
     EmojiTrigger([
         "lessthan",
         "focus",
@@ -63,9 +77,16 @@ triggers:list[MessageTrigger] = [
         "pieces",
         "peices"
     ], "Put. It. Together."),
-    TextTrigger([
-        "annoy"
-    ], "Stop annoying yourself.")
+    RandomTrigger(0.25, 
+        TextTrigger([
+            "annoy"
+        ], "Stop annoying yourself.")
+    ),
+    RandomTrigger(0.15, 
+        TextTrigger([
+            "bot"
+        ], "I'm not a bot.")
+    ),
 ]
 
 dotenv.load_dotenv(".env")
@@ -85,7 +106,6 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
-    global lessthan
     print(f"Message from {message.author}: {message.content}")
 
     for trigger in triggers:
