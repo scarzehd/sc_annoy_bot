@@ -99,6 +99,4 @@ def process_string(string:str) -> str:
         string = string.replace(char, "")
     return string
 
-print(api_key)
-
 client.run(api_key)
