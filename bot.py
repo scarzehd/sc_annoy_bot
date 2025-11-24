@@ -35,11 +35,12 @@ class EmojiTrigger(MessageTrigger):
     
     def handle_message(self, message:discord.Message):
         processed_string = process_string(message.content)
-        if processed_string in self.triggers:
-            for emoji in message.guild.emojis:
-                if emoji.name in self.emoji_names:
-                    asyncio.create_task(message.add_reaction(emoji))
-                    return
+        for trigger in self.triggers:
+            if trigger in processed_string:
+                for emoji in message.guild.emojis:
+                    if emoji.name in self.emoji_names:
+                        asyncio.create_task(message.add_reaction(emoji))
+                        return
 
 triggers:list[MessageTrigger] = [
     TextTrigger([
@@ -78,7 +79,6 @@ client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print()
     print(f"Logged in as: {client.user}")
 
 @client.event
@@ -87,12 +87,6 @@ async def on_message(message):
         return
     global lessthan
     print(f"Message from {message.author}: {message.content}")
-    processed_message = process_string(message.content)
-    # if "lessthan" in processed_message or "focus" in processed_message or "oblivion" in processed_message:
-    #     if lessthan == None:
-    #         lessthan = await message.guild.fetch_emoji(1287978418314547241)
-    #         print(lessthan.name)
-    #     await message.add_reaction(lessthan)
 
     for trigger in triggers:
         trigger.handle_message(message)
