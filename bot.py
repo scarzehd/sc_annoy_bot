@@ -4,16 +4,6 @@ import os
 import asyncio
 import random
 
-# text_triggers = {
-#     "lessthan": "WHAT ARE YOU WAITING FOR?",
-#     "didn'tnotice": "WHAT ARE YOU WAITING FOR?",
-#     "didntnotice": "WHAT ARE YOU WAITING FOR?",
-#     "didn'tevennotice": "WHAT ARE YOU WAITING FOR?",
-#     "didntevennotice": "WHAT ARE YOU WAITING FOR?",
-#     "oblivion": "WHAT ARE YOU WAITING FOR?",
-#     "pieces": "Put. It. Together."
-# }
-
 class MessageTrigger:
     def handle_message(self, message:discord.Message):
         pass
@@ -61,8 +51,9 @@ triggers:list[MessageTrigger] = [
             "focus",
             "hypnosis",
             "didntnotice",
-            "didntevennotice",
-            "oblivion"
+            "evennotice",
+            "oblivion",
+            "barelyrecognize"
         ], "WHAT ARE YOU WAITING FOR?")
     ),
     EmojiTrigger([
@@ -70,8 +61,9 @@ triggers:list[MessageTrigger] = [
         "focus",
         "hypnosis",
         "didntnotice",
-        "didntevennotice",
-        "oblivion"
+        "evennotice",
+        "oblivion",
+        "barelyrecognize"
     ], "lessthan"),
     TextTrigger([
         "pieces",
