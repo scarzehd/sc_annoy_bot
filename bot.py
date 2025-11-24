@@ -1,5 +1,6 @@
 import discord
 import dotenv
+import os
 
 text_triggers = {
     "lessthan": "WHAT ARE YOU WAITING FOR?",
@@ -13,9 +14,12 @@ text_triggers = {
 
 lessthan = None
 
+with open(".env") as env:
+    print(env.readline())
 
+dotenv.load_dotenv(".env")
 
-api_key = dotenv.dotenv_values(".env")["DISCORD_BOT_TOKEN"]
+api_key = os.getenv("DISCORD_BOT_TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -45,6 +49,6 @@ async def on_message(message):
 def process_string(string:str) -> str:
     return "".join(string.lower().split())
 
-
+print(api_key)
 
 client.run(api_key)
