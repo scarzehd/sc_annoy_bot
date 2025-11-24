@@ -24,8 +24,9 @@ class TextTrigger(MessageTrigger):
 
     def handle_message(self, message:discord.Message):
         processed_string = process_string(message.content)
-        if processed_string in self.triggers:
-            asyncio.create_task(message.reply(self.response))
+        for trigger in self.triggers:
+            if trigger in processed_string:
+                asyncio.create_task(message.reply(self.response))
 
 class EmojiTrigger(MessageTrigger):
     def __init__(self, triggers:list[str], emoji_names:list[str]):
@@ -38,6 +39,7 @@ class EmojiTrigger(MessageTrigger):
             for emoji in message.guild.emojis:
                 if emoji.name in self.emoji_names:
                     asyncio.create_task(message.add_reaction(emoji))
+                    return
 
 triggers:list[MessageTrigger] = [
     TextTrigger([
@@ -59,7 +61,10 @@ triggers:list[MessageTrigger] = [
     TextTrigger([
         "pieces",
         "peices"
-    ], "Put. It. Together.")
+    ], "Put. It. Together."),
+    TextTrigger([
+        "annoy"
+    ], "Stop annoying yourself.")
 ]
 
 dotenv.load_dotenv(".env")
@@ -93,7 +98,7 @@ async def on_message(message):
         trigger.handle_message(message)
 
 def process_string(string:str) -> str:
-    characters_to_remove = ",.-_;:'\""
+    characters_to_remove = ",.-_;:'\"?\\/|()*&^%$#@!"
     string = "".join(string.lower().split())
     for char in characters_to_remove:
         string = string.replace(char, "")
