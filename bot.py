@@ -114,7 +114,9 @@ handlers:list[MessageHandler] = [
     ),
     MessageHandler(
         [
-            TextCondition("shutup")
+            TextCondition("shutup"),
+            TextCondition("shutthehellup"),
+            TextCondition("shutthefuckup")
         ],
         [
             TextResponse("SILENCE"),
@@ -154,6 +156,15 @@ handlers:list[MessageHandler] = [
         ],
         [
             TextResponse("I'm not a bot.")
+        ]
+    ),
+    MessageHandler(
+        [
+            TextCondition("late")
+        ],
+        [
+            TextResponse("https://tenor.com/view/warframe-whispers-in-the-wall-tenno-entrati-1999-gif-16943765476869672917"),
+            EmojiResponse("albrecht_entrati")
         ]
     )
     # RandomTrigger(0.5,
