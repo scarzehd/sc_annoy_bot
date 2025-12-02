@@ -17,13 +17,30 @@ class RandomCondition(MessageCondition):
         return True
 
 class TextCondition(MessageCondition):
-    def __init__(self, text:str):
+    def __init__(self, text:str, filter_whitespace:bool = True, filter_case:bool = True, filter_punctuation:bool = True):
         self.text = text
+        self.filter_whitespace = filter_whitespace
+        self.filter_case = filter_case
+        self.filter_punctuation = filter_punctuation
     
     def check_condition(self, message):
-        processed = process_string(message.content)
+        processed = process_string(message.content, self.filter_whitespace, self.filter_case, self.filter_punctuation)
         if self.text in processed:
             return True
+        
+        return False
+
+class MatchWordCondition(MessageCondition):
+    def __init__(self, text:str, filter_case:bool = True, filter_punctuation:bool = True):
+        self.text = text
+        self.filter_case = filter_case
+        self.filter_punctuation = filter_punctuation
+    
+    def check_condition(self, message):
+        processed = process_string(message.content, False, self.filter_case, self.filter_punctuation)
+        for word in processed.split():
+            if word == self.text:
+                return True
         
         return False
 
@@ -74,12 +91,15 @@ class MessageHandler:
         self.conditions = conditions
         self.responses = responses
 
-    def handle_message(self, message:discord.Message):
+    def handle_message(self, message:discord.Message) -> bool:
+        handled = False
         for condition in self.conditions:
             if condition.check_condition(message):
                 for response in self.responses:
                     response.respond(message)
-                return
+                handled = True
+        
+        return handled
 
 less_than_conditions = [
     TextCondition("lessthan"),
@@ -160,49 +180,13 @@ handlers:list[MessageHandler] = [
     ),
     MessageHandler(
         [
-            TextCondition("late")
+            MatchWordCondition("late")
         ],
         [
             TextResponse("https://tenor.com/view/warframe-whispers-in-the-wall-tenno-entrati-1999-gif-16943765476869672917"),
             EmojiResponse("albrecht_entrati")
         ]
     )
-    # RandomTrigger(0.5,
-    #     TextTrigger([
-    #         "lessthan",
-    #         "focus",
-    #         "hypnosis",
-    #         "didntnotice",
-    #         "evennotice",
-    #         "oblivion",
-    #         "barelyrecognize",
-    #         "justify"
-    #     ], "WHAT ARE YOU WAITING FOR?")
-    # ),
-    # EmojiTrigger([
-    #     "lessthan",
-    #     "focus",
-    #     "hypnosis",
-    #     "didntnotice",
-    #     "evennotice",
-    #     "oblivion",
-    #     "recognize",
-    #     "justify"
-    # ], "lessthan"),
-    # TextTrigger([
-    #     "pieces",
-    #     "peices"
-    # ], "Put. It. Together."),
-    # RandomTrigger(0.25, 
-    #     TextTrigger([
-    #         "annoy"
-    #     ], "Stop annoying yourself.")
-    # ),
-    # RandomTrigger(0.15, 
-    #     TextTrigger([
-    #         "bot"
-    #     ], "I'm not a bot.")
-    # ),
 ]
 
 dotenv.load_dotenv(".env")
@@ -225,13 +209,21 @@ async def on_message(message):
     print(f"Message from {message.author}: {message.content}")
 
     for handler in handlers:
-        handler.handle_message(message)
+        if handler.handle_message(message):
+            return
 
-def process_string(string:str) -> str:
-    characters_to_remove = ",.-_;:'\"?\\/|()*&^%$#@!"
-    string = "".join(string.lower().split())
-    for char in characters_to_remove:
-        string = string.replace(char, "")
+def process_string(string:str, filter_whitespace:bool = True, filter_case:bool = True, filter_punctuation:bool = True) -> str:
+    if filter_whitespace:
+        string = "".join(string.split())
+    
+    if filter_case:
+        string = string.lower()
+    
+    if filter_punctuation:
+        characters_to_remove = ",.-_;:'\"?\\/|()*&^%$#@!"
+        for char in characters_to_remove:
+            string = string.replace(char, "")
+    
     return string
 
 client.run(api_key)
