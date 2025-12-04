@@ -131,6 +131,24 @@
                     "text": "Stop annoying yourself."
                 }
             ]
+        },
+        {
+            "conditions": [
+                {
+                    "type": "text",
+                    "text": "pieces"
+                },
+                {
+                    "type": "text",
+                    "text": "peices"
+                }
+            ],
+            "responses": [
+                {
+                    "type": "text",
+                    "text": "Put. It. Together."
+                }
+            ]
         }
     ]
 }

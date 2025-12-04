@@ -101,6 +101,7 @@ class MessageHandler:
                 for response in self.responses:
                     response.respond(message)
                 handled = True
+                break
         
         return handled
 
