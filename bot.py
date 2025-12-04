@@ -3,6 +3,8 @@ import dotenv
 import os
 import asyncio
 import random
+import json
+from collections.abc import Callable
 
 class MessageCondition:
     def check_condition(self, message:discord.Message) -> bool: return True
@@ -87,9 +89,10 @@ class EmojiResponse(MessageResponse):
                 return
 
 class MessageHandler:
-    def __init__(self, conditions:list[MessageCondition], responses:list[MessageResponse]):
+    def __init__(self, conditions:list[MessageCondition], responses:list[MessageResponse], blocking:bool = True):
         self.conditions = conditions
         self.responses = responses
+        self.blocking = blocking
 
     def handle_message(self, message:discord.Message) -> bool:
         handled = False
@@ -112,82 +115,169 @@ less_than_conditions = [
     TextCondition("violence")
 ]
 
-handlers:list[MessageHandler] = [
-    MessageHandler(
-        [
-            AndCondition(
-                [
-                    RandomCondition(0.7),
-                    OrCondition(less_than_conditions)
-                ]
-            )
-        ],
-        [
-            TextResponse("WHAT ARE YOU WAITING FOR?")
-        ]
-    ),
-    MessageHandler(
-        less_than_conditions,
-        [
-            EmojiResponse("lessthan")
-        ]
-    ),
-    MessageHandler(
-        [
-            TextCondition("shutup"),
-            TextCondition("shutthehellup"),
-            TextCondition("shutthefuckup")
-        ],
-        [
-            TextResponse("SILENCE"),
-            EmojiResponse("lessthan")
-        ]
-    ),
-    MessageHandler(
-        [
-            TextCondition("pieces"),
-            TextCondition("peices")
-        ],
-        [
-            TextResponse("Put. It. Together.")
-        ]
-    ),
-    MessageHandler(
-        [
-            AndCondition(
-                [
-                    TextCondition("annoy"),
-                    RandomCondition(0.5)
-                ]
-            )
-        ],
-        [
-            TextResponse("Stop annoying yourself.")
-        ]
-    ),
-    MessageHandler(
-        [
-            AndCondition(
-                [
-                    TextCondition("bot"),
-                    RandomCondition(0.35)
-                ]
-            )
-        ],
-        [
-            TextResponse("I'm not a bot.")
-        ]
-    ),
-    MessageHandler(
-        [
-            MatchWordCondition("late")
-        ],
-        [
-            TextResponse("https://tenor.com/view/warframe-whispers-in-the-wall-tenno-entrati-1999-gif-16943765476869672917"),
-            EmojiResponse("albrecht_entrati")
-        ]
-    )
-]
+class ConfigLoader():
+    def load_and_condition(self, data) -> AndCondition:
+        conditions:list[TextCondition] = []
+        for condition_data in data["conditions"]:
+            conditions.append(self.load_condition(condition_data))
+        
+        return AndCondition(conditions)
+
+    def load_or_condition(self, data) -> OrCondition:
+        conditions:list[TextCondition] = []
+        for condition_data in data["conditions"]:
+            conditions.append(self.load_condition(condition_data))
+        
+        return OrCondition(conditions)
+
+    def load_text_condition(self, data) -> TextCondition:
+        text = data["text"]
+
+        filter_whitespace = True
+        if "filter_whitespace" in data:
+            filter_whitespace = data["filter_whitespace"]
+        
+        filter_case = True
+        if "filter_case" in data:
+            filter_case = data["filter_case"]
+
+        filter_punctuation = True
+        if "filter_punctuation" in data:
+            filter_punctuation = data["filter_punctuation"]
+        
+        return TextCondition(text, filter_whitespace, filter_case, filter_punctuation)
+
+    def load_random_condition(self, data) -> RandomCondition:
+        chance = data["chance"]
+        return RandomCondition(chance)
+
+    def load_match_word_condition(self, data) -> MatchWordCondition:
+        text = data["text"]
+        filter_case = True
+        if "filter_case" in data:
+            filter_case = data["filter_case"]
+
+        filter_punctuation = True
+        if "filter_punctuation" in data:
+            filter_punctuation = data["filter_punctuation"]
+        
+        return MatchWordCondition(text, filter_case, filter_punctuation)
+
+    conditions:dict[str, Callable] = {
+        "text": load_text_condition,
+        "match_word": load_match_word_condition,
+        "random": load_random_condition,
+        "and": load_and_condition,
+        "or": load_or_condition
+    }
+
+    def load_condition(self, data) -> MessageCondition:
+        return self.conditions[data["type"]](self, data)
+
+    def load_text_response(self, data) -> TextResponse:
+        return TextResponse(data["text"])
+
+    def load_emoji_response(self, data) -> EmojiResponse:
+        return EmojiResponse(data["emoji"])
+
+    responses:dict[str, Callable] = {
+        "text": load_text_response,
+        "emoji": load_emoji_response
+    }
+
+    def load_response(self, data) -> MessageResponse:
+        return self.responses[data["type"]](self, data)
+
+    def load_handler(self, data) -> MessageHandler:
+        conditions:list[MessageCondition] = []
+        for condition_data in data["conditions"]:
+            conditions.append(self.load_condition(condition_data))
+        
+        responses:list[MessageResponse] = []
+        for response_data in data["responses"]:
+            responses.append(self.load_response(response_data))
+        
+        blocking = True
+        if "blocking" in data:
+            blocking = data["blocking"]
+        
+        return MessageHandler(conditions, responses, blocking)
+
+    def load_config_from_file(self, path:str) -> list[MessageHandler]:
+        with open(path) as file:
+            config_dict = json.load(file)
+            handlers:list[MessageHandler] = []
+            for data in config_dict["message_handlers"]:
+                handlers.append(self.load_handler(data))
+            
+            return handlers
+
+loader = ConfigLoader()
+handlers:list[MessageHandler] = loader.load_config_from_file("./config.json")
+# [
+#     MessageHandler(
+#         less_than_conditions,
+#         [
+#             EmojiResponse("lessthan"),
+#             TextResponse("WHAT ARE YOU WAITING FOR?")
+#         ]
+#     ),
+#     MessageHandler(
+#         [
+#             TextCondition("shutup"),
+#             TextCondition("shutthehellup"),
+#             TextCondition("shutthefuckup")
+#         ],
+#         [
+#             TextResponse("SILENCE"),
+#             EmojiResponse("lessthan")
+#         ]
+#     ),
+#     MessageHandler(
+#         [
+#             TextCondition("pieces"),
+#             TextCondition("peices")
+#         ],
+#         [
+#             TextResponse("Put. It. Together.")
+#         ]
+#     ),
+#     MessageHandler(
+#         [
+#             AndCondition(
+#                 [
+#                     TextCondition("annoy"),
+#                     RandomCondition(0.5)
+#                 ]
+#             )
+#         ],
+#         [
+#             TextResponse("Stop annoying yourself.")
+#         ]
+#     ),
+#     MessageHandler(
+#         [
+#             AndCondition(
+#                 [
+#                     TextCondition("bot"),
+#                     RandomCondition(0.35)
+#                 ]
+#             )
+#         ],
+#         [
+#             TextResponse("I'm not a bot.")
+#         ]
+#     ),
+#     MessageHandler(
+#         [
+#             MatchWordCondition("late")
+#         ],
+#         [
+#             TextResponse("https://tenor.com/view/warframe-whispers-in-the-wall-tenno-entrati-1999-gif-16943765476869672917"),
+#             EmojiResponse("albrecht_entrati")
+#         ]
+#     )
+# ]
 
 dotenv.load_dotenv(".env")
 
@@ -209,7 +299,7 @@ async def on_message(message):
     print(f"Message from {message.author}: {message.content}")
 
     for handler in handlers:
-        if handler.handle_message(message):
+        if handler.handle_message(message) and handler.blocking:
             return
 
 def process_string(string:str, filter_whitespace:bool = True, filter_case:bool = True, filter_punctuation:bool = True) -> str:

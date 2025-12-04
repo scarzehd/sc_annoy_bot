@@ -1,0 +1,136 @@
+{
+    "message_handlers": [
+        {
+            "conditions": [
+                {
+                    "type": "text",
+                    "text": "lessthan"
+                },
+                {
+                    "type": "text",
+                    "text": "focus"
+                },
+                {
+                    "type": "text",
+                    "text": "hypnosis"
+                },
+                {
+                    "type": "text",
+                    "text": "didntnotice"
+                },
+                {
+                    "type": "text",
+                    "text": "evennotice"
+                },
+                {
+                    "type": "text",
+                    "text": "oblivion"
+                },
+                {
+                    "type": "text",
+                    "text": "barelyrecognize"
+                },
+                {
+                    "type": "text",
+                    "text": "violence"
+                }
+            ],
+            "responses": [
+                {
+                    "type": "emoji",
+                    "emoji": "lessthan"
+                },
+                {
+                    "type": "text",
+                    "text": "WHAT ARE YOU WAITING FOR?"
+                }
+            ]
+        },
+        {
+            "conditions": [
+                {
+                    "type": "match_word",
+                    "text": "late"
+                }
+            ],
+            "responses": [
+                {
+                    "type": "emoji",
+                    "emoji": "albrecht_entrati"
+                },
+                {
+                    "type": "text",
+                    "text": "https://tenor.com/view/warframe-whispers-in-the-wall-tenno-entrati-1999-gif-16943765476869672917"
+                }
+            ]
+        },
+        {
+            "conditions": [
+                {
+                    "type": "and",
+                    "conditions": [
+                        {
+                            "type": "random",
+                            "chance": 0.35
+                        },
+                        {
+                            "type": "match_word",
+                            "text": "bot"
+                        }
+                    ]
+                }
+            ],
+            "responses": [
+                {
+                    "type": "text",
+                    "text": "I'm not a bot."
+                }
+            ]
+        },
+        {
+            "conditions": [
+                {
+                    "type": "text",
+                    "text": "shutup"
+                },
+                {
+                    "type": "text",
+                    "text": "shutthehellup"
+                }
+            ],
+            "responses": [
+                {
+                    "type": "text",
+                    "text": "SILENCE"
+                },
+                {
+                    "type": "emoji",
+                    "emoji": "lessthan"
+                }
+            ]
+        },
+        {
+            "conditions": [
+                {
+                    "type": "and",
+                    "conditions": [
+                        {
+                            "type": "text",
+                            "text": "annoy"
+                        },
+                        {
+                            "type": "random",
+                            "chance": 0.5
+                        }
+                    ]
+                }
+            ],
+            "responses": [
+                {
+                    "type": "text",
+                    "text": "Stop annoying yourself."
+                }
+            ]
+        }
+    ]
+}
