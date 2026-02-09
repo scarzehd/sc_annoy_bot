@@ -149,6 +149,38 @@
                     "text": "Put. It. Together."
                 }
             ]
+        },
+        {
+            "conditions": [
+                {
+                    "type": "and",
+                    "conditions": [
+                        {
+                            "type": "or",
+                            "conditions": [
+                                {
+                                    "type": "match_word",
+                                    "text": "never"
+                                },
+                                {
+                                    "type": "match_word",
+                                    "text": "nothing"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "text",
+                            "text": "happen"
+                        }
+                    ]
+                }
+            ],
+            "responses": [
+                {
+                    "type": "text",
+                    "text": "https://tenor.com/view/nothing-ever-happens-nothing-look-at-the-time-nothing-clock-nothing-ever-happens-clock-gif-4518983960573307132"
+                }
+            ]
         }
     ]
 }
