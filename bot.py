@@ -44,6 +44,10 @@ class MatchWordCondition(MessageCondition):
             if word == self.text:
                 return True
         
+        processed_condition = process_string(self.text, False, self.filter_case, self.filter_punctuation)
+        if processed_condition in processed:
+            return True
+        
         return False
 
 class AndCondition(MessageCondition):

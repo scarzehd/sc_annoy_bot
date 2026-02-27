@@ -181,6 +181,20 @@
                     "text": "https://tenor.com/view/nothing-ever-happens-nothing-look-at-the-time-nothing-clock-nothing-ever-happens-clock-gif-4518983960573307132"
                 }
             ]
+        },
+        {
+            "conditions": [
+                {
+                    "type": "match_word",
+                    "text": "I am the one who"
+                }
+            ],
+            "responses": [
+                {
+                    "type": "text",
+                    "text": "https://tenor.com/view/explaining-talking-speed-i-am-the-danger-skyler-gif-19043411"
+                }
+            ]
         }
     ]
 }
